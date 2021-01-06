@@ -10,9 +10,9 @@ static const unsigned int gappov    = 30;       /* vert outer gap between window
 static       int smartgaps          = 1;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=10","Twemoji:size=12","DejaVuSansMono Nerd Font:size=14"};
+static const char *fonts[]          = { "monospace:size=10","Twemoji:size=10","DejaVuSansMono Nerd Font:size=14"};
 static const char dmenufont[]       = "monospace:size=10";
-static const unsigned int baralpha = 180;
+static const unsigned int baralpha = 255;
 static const unsigned int borderalpha = OPAQUE;
 static char normbgcolor[]           = "#222222";
 static char normbordercolor[]       = "#444444";
@@ -31,8 +31,8 @@ static const unsigned int alphas[][3]      = {
 	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
 };
 
-/* tagging */
-static const char *tags[] = { "", "2", "3", "4", "5", "6", "7", "8", "9" };
+/* tagging */ 
+static const char *tags[] = { "", "", "", "", "", "", "", "ﭮ", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -42,7 +42,9 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "Spotify",  NULL,       NULL,       1 << 7,       0,           -1 },
+	{ "Spotify",  NULL,       NULL,       1 << 6,       0,           -1 },
+	{ "Brave-browser", NULL,  NULL,	      1 << 8,	    0,		 -1 },
+	{ "discord", NULL, 	  NULL,       1 << 7, 	    0, 		 -1 },
 };
 
 /* layout(s) */
@@ -90,8 +92,6 @@ static const char *termcmd[]  = { "st", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY|ShiftMask,             XK_j,      pushdown,       {0} },
 	{ MODKEY|ShiftMask,             XK_k,      pushup,         {0} },
