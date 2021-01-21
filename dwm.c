@@ -220,7 +220,7 @@ static void pushup(const Arg *arg);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
-static void resizeclient(Client *c, int x, int y, int w, int h);
+static void resizeclient(Client *c, int x, int y, int w, int h,int remove);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run(void);
@@ -622,7 +622,7 @@ configurenotify(XEvent *e)
 				for (c = m->clients; c; c = c->next)
 					if (c->isfullscreen
                                         &&  c->isfakefullscreen)
-						resizeclient(c, m->mx, m->my, m->mw, m->mh);
+						resizeclient(c, m->mx, m->my, m->mw, m->mh,1);
 				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
 			}
 			focus(NULL);
@@ -1408,11 +1408,11 @@ void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
 	if (applysizehints(c, &x, &y, &w, &h, interact))
-		resizeclient(c, x, y, w, h);
+		resizeclient(c, x, y, w, h,1);
 }
 
 void
-resizeclient(Client *c, int x, int y, int w, int h)
+resizeclient(Client *c, int x, int y, int w, int h, int remove)
 {
 	XWindowChanges wc;
     unsigned int n;
@@ -1430,8 +1430,10 @@ resizeclient(Client *c, int x, int y, int w, int h)
     } else {
            if (selmon->lt[selmon->sellt]->arrange == monocle || n == 1) {
                 wc.border_width = 0;
+				if(remove){
 		c->w = wc.width += c->bw * 2;
 		c->h = wc.height += c->bw * 2;
+				}
            }
     }
 
@@ -1631,21 +1633,21 @@ setfullscreen(Client *c, int fullscreen)
 			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 		c->isfullscreen = 1;
 		if (!c->isfakefullscreen) {
-			resizeclient(c, c->x, c->y, c->w, c->h);
+			resizeclient(c, c->x, c->y, c->w, c->h,0);
 			return;
 		}
 		c->oldstate = c->isfloating;
 		c->oldbw = c->bw;
 		c->bw = 0;
 		c->isfloating = 1;
-		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh);
+		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh,1);
 		XRaiseWindow(dpy, c->win);
 	} else if (!fullscreen && c->isfullscreen){
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = 0;
 		if (!c->isfakefullscreen) {
-			resizeclient(c, c->x, c->y, c->w, c->h);
+			resizeclient(c, c->x, c->y, c->w, c->h,0);
 			return;
 		}
 		c->isfloating = c->oldstate;
@@ -1654,7 +1656,7 @@ setfullscreen(Client *c, int fullscreen)
 		c->y = c->oldy;
 		c->w = c->oldw;
 		c->h = c->oldh;
-		resizeclient(c, c->x, c->y, c->w, c->h);
+		resizeclient(c, c->x, c->y, c->w, c->h,1);
 		arrange(c->mon);
 	}
 }
